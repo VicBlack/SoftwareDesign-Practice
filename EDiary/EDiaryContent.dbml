@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Class="EDiaryContentDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Table Name="" Member="EDiary">
+    <Type Name="EDiary">
+      <Column Member="ID" Type="System.String" CanBeNull="false" />
+      <Column Member="PWD" Type="System.String" CanBeNull="false" />
+      <Column Member="Name" Type="System.String" CanBeNull="false" />
+      <Column Member="Remarks" Type="System.String" CanBeNull="false" />
+    </Type>
+  </Table>
+</Database>
