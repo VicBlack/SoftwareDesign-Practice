@@ -29,6 +29,12 @@ namespace EDiary
 		
     #region 可扩展性方法定义
     partial void OnCreated();
+    partial void InsertDiary(Diary instance);
+    partial void UpdateDiary(Diary instance);
+    partial void DeleteDiary(Diary instance);
+    partial void InsertUser(User instance);
+    partial void UpdateUser(User instance);
+    partial void DeleteUser(User instance);
     #endregion
 		
 		public EDiaryContentDataContext(string connection) : 
@@ -55,14 +61,6 @@ namespace EDiary
 			OnCreated();
 		}
 		
-		public System.Data.Linq.Table<User> User
-		{
-			get
-			{
-				return this.GetTable<User>();
-			}
-		}
-		
 		public System.Data.Linq.Table<Diary> Diary
 		{
 			get
@@ -70,92 +68,21 @@ namespace EDiary
 				return this.GetTable<Diary>();
 			}
 		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="")]
-	public partial class User
-	{
 		
-		private int _ID;
-		
-		private string _PWD;
-		
-		private string _Name;
-		
-		private string _Remarks;
-		
-		public User()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ID")]
-		public int ID
+		public System.Data.Linq.Table<User> User
 		{
 			get
 			{
-				return this._ID;
-			}
-			set
-			{
-				if ((this._ID != value))
-				{
-					this._ID = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PWD", CanBeNull=false)]
-		public string PWD
-		{
-			get
-			{
-				return this._PWD;
-			}
-			set
-			{
-				if ((this._PWD != value))
-				{
-					this._PWD = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", CanBeNull=false)]
-		public string Name
-		{
-			get
-			{
-				return this._Name;
-			}
-			set
-			{
-				if ((this._Name != value))
-				{
-					this._Name = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Remarks", CanBeNull=false)]
-		public string Remarks
-		{
-			get
-			{
-				return this._Remarks;
-			}
-			set
-			{
-				if ((this._Remarks != value))
-				{
-					this._Remarks = value;
-				}
+				return this.GetTable<User>();
 			}
 		}
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="")]
-	public partial class Diary
+	public partial class Diary : INotifyPropertyChanging, INotifyPropertyChanged
 	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		
 		private int _UserID;
 		
@@ -169,11 +96,33 @@ namespace EDiary
 		
 		private bool _Visible;
 		
+		private EntityRef<User> _User;
+		
+    #region 可扩展性方法定义
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnUserIDChanging(int value);
+    partial void OnUserIDChanged();
+    partial void OnWritenDTChanging(System.DateTime value);
+    partial void OnWritenDTChanged();
+    partial void OnTitleChanging(string value);
+    partial void OnTitleChanged();
+    partial void OnContentChanging(string value);
+    partial void OnContentChanged();
+    partial void OnDiaryPWDChanging(string value);
+    partial void OnDiaryPWDChanged();
+    partial void OnVisibleChanging(bool value);
+    partial void OnVisibleChanged();
+    #endregion
+		
 		public Diary()
 		{
+			this._User = default(EntityRef<User>);
+			OnCreated();
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserID")]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserID", IsPrimaryKey=true)]
 		public int UserID
 		{
 			get
@@ -184,13 +133,21 @@ namespace EDiary
 			{
 				if ((this._UserID != value))
 				{
+					if (this._User.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnUserIDChanging(value);
+					this.SendPropertyChanging();
 					this._UserID = value;
+					this.SendPropertyChanged("UserID");
+					this.OnUserIDChanged();
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Datetime")]
-		public System.DateTime Datetime
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Datetime", IsPrimaryKey=true)]
+		public System.DateTime WritenDT
 		{
 			get
 			{
@@ -200,7 +157,11 @@ namespace EDiary
 			{
 				if ((this._Datetime != value))
 				{
+					this.OnWritenDTChanging(value);
+					this.SendPropertyChanging();
 					this._Datetime = value;
+					this.SendPropertyChanged("WritenDT");
+					this.OnWritenDTChanged();
 				}
 			}
 		}
@@ -216,7 +177,11 @@ namespace EDiary
 			{
 				if ((this._Title != value))
 				{
+					this.OnTitleChanging(value);
+					this.SendPropertyChanging();
 					this._Title = value;
+					this.SendPropertyChanged("Title");
+					this.OnTitleChanged();
 				}
 			}
 		}
@@ -232,7 +197,11 @@ namespace EDiary
 			{
 				if ((this._Content != value))
 				{
+					this.OnContentChanging(value);
+					this.SendPropertyChanging();
 					this._Content = value;
+					this.SendPropertyChanged("Content");
+					this.OnContentChanged();
 				}
 			}
 		}
@@ -248,7 +217,11 @@ namespace EDiary
 			{
 				if ((this._DiaryPWD != value))
 				{
+					this.OnDiaryPWDChanging(value);
+					this.SendPropertyChanging();
 					this._DiaryPWD = value;
+					this.SendPropertyChanged("DiaryPWD");
+					this.OnDiaryPWDChanged();
 				}
 			}
 		}
@@ -264,9 +237,229 @@ namespace EDiary
 			{
 				if ((this._Visible != value))
 				{
+					this.OnVisibleChanging(value);
+					this.SendPropertyChanging();
 					this._Visible = value;
+					this.SendPropertyChanged("Visible");
+					this.OnVisibleChanged();
 				}
 			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_Diary", Storage="_User", ThisKey="UserID", OtherKey="ID", IsForeignKey=true)]
+		public User User
+		{
+			get
+			{
+				return this._User.Entity;
+			}
+			set
+			{
+				User previousValue = this._User.Entity;
+				if (((previousValue != value) 
+							|| (this._User.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._User.Entity = null;
+						previousValue.Diary.Remove(this);
+					}
+					this._User.Entity = value;
+					if ((value != null))
+					{
+						value.Diary.Add(this);
+						this._UserID = value.ID;
+					}
+					else
+					{
+						this._UserID = default(int);
+					}
+					this.SendPropertyChanged("User");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="")]
+	public partial class User : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _ID;
+		
+		private string _PWD;
+		
+		private string _Name;
+		
+		private string _Remarks;
+		
+		private EntitySet<Diary> _Diary;
+		
+    #region 可扩展性方法定义
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIDChanging(int value);
+    partial void OnIDChanged();
+    partial void OnPWDChanging(string value);
+    partial void OnPWDChanged();
+    partial void OnNameChanging(string value);
+    partial void OnNameChanged();
+    partial void OnRemarksChanging(string value);
+    partial void OnRemarksChanged();
+    #endregion
+		
+		public User()
+		{
+			this._Diary = new EntitySet<Diary>(new Action<Diary>(this.attach_Diary), new Action<Diary>(this.detach_Diary));
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ID", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int ID
+		{
+			get
+			{
+				return this._ID;
+			}
+			set
+			{
+				if ((this._ID != value))
+				{
+					this.OnIDChanging(value);
+					this.SendPropertyChanging();
+					this._ID = value;
+					this.SendPropertyChanged("ID");
+					this.OnIDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PWD", CanBeNull=false)]
+		public string PWD
+		{
+			get
+			{
+				return this._PWD;
+			}
+			set
+			{
+				if ((this._PWD != value))
+				{
+					this.OnPWDChanging(value);
+					this.SendPropertyChanging();
+					this._PWD = value;
+					this.SendPropertyChanged("PWD");
+					this.OnPWDChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", CanBeNull=false)]
+		public string Name
+		{
+			get
+			{
+				return this._Name;
+			}
+			set
+			{
+				if ((this._Name != value))
+				{
+					this.OnNameChanging(value);
+					this.SendPropertyChanging();
+					this._Name = value;
+					this.SendPropertyChanged("Name");
+					this.OnNameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Remarks")]
+		public string Remarks
+		{
+			get
+			{
+				return this._Remarks;
+			}
+			set
+			{
+				if ((this._Remarks != value))
+				{
+					this.OnRemarksChanging(value);
+					this.SendPropertyChanging();
+					this._Remarks = value;
+					this.SendPropertyChanged("Remarks");
+					this.OnRemarksChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_Diary", Storage="_Diary", ThisKey="ID", OtherKey="UserID")]
+		public EntitySet<Diary> Diary
+		{
+			get
+			{
+				return this._Diary;
+			}
+			set
+			{
+				this._Diary.Assign(value);
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_Diary(Diary entity)
+		{
+			this.SendPropertyChanging();
+			entity.User = this;
+		}
+		
+		private void detach_Diary(Diary entity)
+		{
+			this.SendPropertyChanging();
+			entity.User = null;
 		}
 	}
 }

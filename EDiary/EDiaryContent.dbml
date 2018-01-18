@@ -1,22 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Class="EDiaryContentDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Table Name="" Member="User">
-    <Type Name="User">
-      <Column Member="ID" Type="System.Int32" CanBeNull="false" />
-      <Column Member="PWD" Type="System.String" CanBeNull="false" />
-      <Column Member="Name" Type="System.String" CanBeNull="false" />
-      <Column Member="Remarks" Type="System.String" CanBeNull="false" />
-      <Association Name="User_Diary" Member="Diary" ThisKey="ID" OtherKey="UserID" Type="Diary" />
-    </Type>
-  </Table>
   <Table Name="" Member="Diary">
     <Type Name="Diary">
-      <Column Member="UserID" Type="System.Int32" CanBeNull="false" />
-      <Column Member="Datetime" Type="System.DateTime" CanBeNull="false" />
-      <Column Member="Title" Type="System.String" CanBeNull="true" />
-      <Column Member="Content" Type="System.String" CanBeNull="false" />
-      <Column Member="DiaryPWD" Type="System.String" CanBeNull="true" />
-      <Column Member="Visible" Type="System.Boolean" CanBeNull="false" />
+      <Column Name="UserID" Type="System.Int32" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="WritenDT" Storage="_Datetime" Type="System.DateTime" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" CanBeNull="true" />
+      <Column Name="Content" Type="System.String" CanBeNull="false" />
+      <Column Name="DiaryPWD" Type="System.String" CanBeNull="true" />
+      <Column Name="Visible" Type="System.Boolean" CanBeNull="false" />
       <Association Name="User_Diary" Member="User" ThisKey="UserID" OtherKey="ID" Type="User" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="" Member="User">
+    <Type Name="User">
+      <Column Name="ID" AutoSync="Never" Type="System.Int32" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="PWD" Type="System.String" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" CanBeNull="false" />
+      <Column Name="Remarks" Type="System.String" CanBeNull="true" />
+      <Association Name="User_Diary" Member="Diary" ThisKey="ID" OtherKey="UserID" Type="Diary" />
     </Type>
   </Table>
 </Database>

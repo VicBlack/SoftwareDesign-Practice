@@ -25,28 +25,122 @@ namespace EDiary
             {
                 Status="数据库已经存在！";                
             }
-            var Diaries = from r in DataContext.Diary select r;
+            Status = $"请登录或注册。";
+            Diaries = new ObservableCollection<Diary>();
         }
 
         #region 成员
         public string Status { get { return _Status; } set { if (_Status == value) return; _Status = value; OnPropertyChanged(nameof(Status)); } }
         private string _Status;
 
-        public void Signup(User newuser)
-        {
+        public User Currentuser { get { return _Currentuser; } set { if (_Currentuser == value) return; _Currentuser = value; OnPropertyChanged(nameof(Currentuser)); } }
+        private User _Currentuser=null;
 
-        }
+        public bool DiaryVisible { get { return _DiaryVisible; } set { if (_DiaryVisible == value) return; _DiaryVisible = value; OnPropertyChanged(nameof(DiaryVisible)); } }
+        private bool _DiaryVisible;
+
+        public int SearchYear { get { return _SearchYear; } set { if (_SearchYear == value) return; _SearchYear = value; OnPropertyChanged(nameof(SearchYear)); } }
+        private int _SearchYear;
+        
+        public int SearchMonth { get { return _SearchMonth; } set { if (_SearchMonth == value) return; _SearchMonth = value; OnPropertyChanged(nameof(SearchMonth)); } }
+        private int _SearchMonth;
+
+        public int SearchDay { get { return _SearchDay; } set { if (_SearchDay == value) return; _SearchDay = value; OnPropertyChanged(nameof(SearchDay)); } }
+        private int _SearchDay;
+
+        public string SearchTitle { get { return _SearchTitle; } set { if (_SearchTitle == value) return; _SearchTitle = value; OnPropertyChanged(nameof(SearchTitle)); } }
+        private string _SearchTitle;
+
+        public string Pattern { get { return _Pattern; } set { if (_Pattern == value) return; _Pattern = value; OnPropertyChanged(nameof(Pattern)); } }
+        private string _Pattern;
+
+        public string ReplacePattern { get { return _ReplacePattern; } set { if (_ReplacePattern == value) return; _ReplacePattern = value; OnPropertyChanged(nameof(ReplacePattern)); } }
+        private string _ReplacePattern;
 
         public ObservableCollection<Diary> Diaries
         {
             get;set;
         }
 
+        public EDiaryContentDataContext DataContext { get; }
+        #endregion
+
         public void Submit()
         {
             DataContext.SubmitChanges();
         }
-        public EDiaryContentDataContext DataContext { get; }
+
+        #region 用户管理
+        public void Signup(string newname,string newpwd,string newremarks)
+        {
+            User newuser = new User { Name = newname, PWD = newpwd, Remarks = newremarks };
+            DataContext.User.InsertOnSubmit(newuser);
+            Submit();
+            Currentuser = DataContext.ExecuteQuery<User>("Select top 1 * from [dbo].[User] order by ID desc").First();
+            Status = $"您的帐号为{Currentuser.ID}，请登录时使用帐号登录";
+            InitializeDiary();
+        }
+
+        public bool Signin(int id,string pwd)
+        {
+            var sign= from r in DataContext.User where r.ID == id && r.PWD.Equals(pwd) select r;
+            if (sign.Count() == 0)
+            {
+                Status = $"登录失败，请重试！";
+                return false;
+            }
+            Currentuser = sign.First();
+            InitializeDiary();
+            Status = $"欢迎登录，用户{Currentuser.Name}";
+            return true;
+        }
+
+        public void InitializeDiary()
+        {
+            var QDiaries = from r in DataContext.Diary where r.UserID==Currentuser.ID select r;
+            foreach(var QD in QDiaries)
+            {
+                if(QD.Visible==true)
+                Diaries.Add(QD);
+            }
+        }
+        
+        public void Signout(bool needsave)
+        {
+            Status = $"感谢使用！";
+            if (needsave)
+            {
+                var QDiaries = from r in DataContext.Diary where r.UserID == Currentuser.ID select r;
+                foreach (var QD in QDiaries)
+                {
+                    DataContext.Diary.DeleteOnSubmit(QD);
+                }
+                foreach (Diary d in Diaries)
+                {
+                    DataContext.Diary.InsertOnSubmit(d);
+                }
+                Submit();
+            }
+            Currentuser = null;
+            Diaries.Clear();
+        }
+
+        public void ModifyPWD(string pwd,string npwd)
+        {
+            if(!Currentuser.PWD.Equals(pwd))
+            {
+                Status = "修改密码失败，原密码错误！";
+            }
+            Currentuser.PWD = npwd;
+            Submit();
+            Status = "修改密码成功！";
+        }
+
+        public int getDiaryCount()
+        {
+            var QDiaries = from r in DataContext.Diary where r.UserID == Currentuser.ID select r;
+            return QDiaries.Count();
+        }
         #endregion
         #region INotifyPropertyChanged接口便利实现
         private void OnPropertyChanged(string aPropertyName)

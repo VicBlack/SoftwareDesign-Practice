@@ -1,0 +1,1 @@
+﻿Select top 1 * from [dbo].[User] order by ID desc

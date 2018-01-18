@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EDiary"
-        mc:Ignorable="d" FontSize="12"
+        mc:Ignorable="d" FontSize="12" Closed="OnMainWindowClosed"
         Title="EDiary" Height="600" Width="800">
     <Window.Resources>
         <RoutedCommand x:Key="Signup"/>
@@ -12,33 +12,42 @@
         <RoutedCommand x:Key="ModifyPWD"/>
         <RoutedCommand x:Key="GeneralInfo"/>
         <RoutedCommand x:Key="Signout"/>
-        <RoutedCommand x:Key="CreateDiary"/>
-        <RoutedCommand x:Key="OpenDiary"/>
+        <RoutedCommand x:Key="CreateDiary"/>        
         <RoutedCommand x:Key="SaveDiary"/>
         <RoutedCommand x:Key="CloseDiary"/>
         <RoutedCommand x:Key="LockDiary"/>
         <RoutedCommand x:Key="HideDiary"/>
+        <RoutedCommand x:Key="MatchRE"/>
+        <RoutedCommand x:Key="ReplaceRE"/>
         <RoutedCommand x:Key="Search"/>
+        <RoutedCommand x:Key="OpenDiary"/>
     </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource Signup}" CanExecute="OnSignup_CanExecuted" Executed="OnSignup_Executed"/>
+        <CommandBinding Command="{StaticResource Signin}" CanExecute="OnSignin_CanExecuted" Executed="OnSignin_Executed"/>
+        <CommandBinding Command="{StaticResource Signout}" CanExecute="OnSignout_CanExecuted" Executed="OnSignout_Executed"/>
+        <CommandBinding Command="{StaticResource ModifyPWD}" CanExecute="OnModifyPWD_CanExecuted" Executed="OnModifyPWD_Executed"/>
+        <CommandBinding Command="{StaticResource GeneralInfo}" CanExecute="OnGeneralInfo_CanExecuted" Executed="OnGeneralInfo_Executed"/>
+    </Window.CommandBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="用户">
-                <MenuItem Header="注册"/>
-                <MenuItem Header="登录"/>
-                <MenuItem Header="修改密码"/>
-                <MenuItem Header="信息总览"/>
-                <MenuItem Header="注销"/>
+                <MenuItem Header="注册" Command="{StaticResource Signup}"/>
+                <MenuItem Header="登录" Command="{StaticResource Signin}"/>
+                <MenuItem Header="修改密码" Command="{StaticResource ModifyPWD}"/>
+                <MenuItem Header="信息总览" Command="{StaticResource GeneralInfo}"/>
+                <MenuItem Header="注销" Command="{StaticResource Signout}"/>
             </MenuItem>
             <MenuItem Header="日记本">
-                <MenuItem Header="新建日记"/>
-                <MenuItem Header="保存日记"/>
-                <MenuItem Header="关闭日记"/>
-                <MenuItem Header="加密日记"/>
-                <MenuItem Header="隐藏日记"/>                
+                <MenuItem Header="新建日记" Command="{StaticResource CreateDiary}"/>
+                <MenuItem Header="保存日记" Command="{StaticResource SaveDiary}"/>
+                <MenuItem Header="关闭日记" Command="{StaticResource CloseDiary}"/>
+                <MenuItem Header="加密日记" Command="{StaticResource LockDiary}"/>
+                <MenuItem Header="隐藏日记" Command="{StaticResource HideDiary}"/>
             </MenuItem>
             <MenuItem Header="编辑">
-                <MenuItem Header="查找"/>
-                <MenuItem Header="替换"/>
+                <MenuItem Header="查找" Command="{StaticResource MatchRE}"/>
+                <MenuItem Header="替换" Command="{StaticResource ReplaceRE}"/>
             </MenuItem>
         </Menu>
         <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}"/>
@@ -52,7 +61,7 @@
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Label Content="欢迎用户:"/>
-                            <Label Content="{Binding Name}"/>                            
+                            <Label Content="{Binding Currentuser.Name}"/>                            
                         </StackPanel>
                         <DockPanel Margin="5" HorizontalAlignment="Center">
                             <TextBox Text="{Binding SearchYear}" MinWidth="50"/>
@@ -67,7 +76,7 @@
                             <TextBox Text="{Binding SearchTitle}" MinWidth="130"/>                            
                         </DockPanel>
                         <DockPanel Margin="5">
-                            <CheckBox DockPanel.Dock="Left" Content="已隐藏日记" />
+                            <CheckBox DockPanel.Dock="Left" IsThreeState="True" IsChecked="{Binding DiaryVisible}" Content="已隐藏日记"/>
                             <Button Command="{StaticResource Search}" Content="搜索" Margin="2,0,2,0"/>
                             <Button DockPanel.Dock="Right" Command="{StaticResource OpenDiary}" Content="打开日记" Margin="2,0,2,0"/>
                         </DockPanel>
@@ -76,15 +85,15 @@
                 <DockPanel DockPanel.Dock="Bottom">
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
                         <Label Content="时间"/>
-                        <Label Content=":"/>
+                        <Label Content="|"/>
                         <Label Content="标题"/>
                     </StackPanel>
                     <ListBox x:Name="lstDiaries" ItemsSource="{Binding Diaries}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock Text="{Binding Datatime}" />
-                                    <TextBlock Text=":" />
+                                    <TextBlock Text="{Binding WritenDT}" />
+                                    <TextBlock Text="|" />
                                     <TextBlock Text="{Binding Title}" />
                                 </StackPanel>
                             </DataTemplate>
