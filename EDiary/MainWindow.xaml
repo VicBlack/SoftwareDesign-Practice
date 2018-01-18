@@ -4,9 +4,118 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EDiary"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+        mc:Ignorable="d" FontSize="12"
+        Title="EDiary" Height="600" Width="800">
+    <Window.Resources>
+        <RoutedCommand x:Key="Signup"/>
+        <RoutedCommand x:Key="Signin"/>
+        <RoutedCommand x:Key="ModifyPWD"/>
+        <RoutedCommand x:Key="GeneralInfo"/>
+        <RoutedCommand x:Key="Signout"/>
+        <RoutedCommand x:Key="CreateDiary"/>
+        <RoutedCommand x:Key="OpenDiary"/>
+        <RoutedCommand x:Key="SaveDiary"/>
+        <RoutedCommand x:Key="CloseDiary"/>
+        <RoutedCommand x:Key="LockDiary"/>
+        <RoutedCommand x:Key="HideDiary"/>
+        <RoutedCommand x:Key="Search"/>
+    </Window.Resources>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="用户">
+                <MenuItem Header="注册"/>
+                <MenuItem Header="登录"/>
+                <MenuItem Header="修改密码"/>
+                <MenuItem Header="信息总览"/>
+                <MenuItem Header="注销"/>
+            </MenuItem>
+            <MenuItem Header="日记本">
+                <MenuItem Header="新建日记"/>
+                <MenuItem Header="保存日记"/>
+                <MenuItem Header="关闭日记"/>
+                <MenuItem Header="加密日记"/>
+                <MenuItem Header="隐藏日记"/>                
+            </MenuItem>
+            <MenuItem Header="编辑">
+                <MenuItem Header="查找"/>
+                <MenuItem Header="替换"/>
+            </MenuItem>
+        </Menu>
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            <DockPanel Grid.Column="0">
+                <GroupBox DockPanel.Dock="Top" Header="浏览">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Label Content="欢迎用户:"/>
+                            <Label Content="{Binding Name}"/>                            
+                        </StackPanel>
+                        <DockPanel Margin="5" HorizontalAlignment="Center">
+                            <TextBox Text="{Binding SearchYear}" MinWidth="50"/>
+                            <Label Content="年"/>
+                            <TextBox Text="{Binding SearchMonth}" MinWidth="25"/>
+                            <Label Content="月"/>
+                            <TextBox Text="{Binding SearchDay}" MinWidth="25"/>
+                            <Label Content="日"/>
+                        </DockPanel>
+                        <DockPanel Margin="5">
+                            <Label DockPanel.Dock="Left" Content="标题:"/>
+                            <TextBox Text="{Binding SearchTitle}" MinWidth="130"/>                            
+                        </DockPanel>
+                        <DockPanel Margin="5">
+                            <CheckBox DockPanel.Dock="Left" Content="已隐藏日记" />
+                            <Button Command="{StaticResource Search}" Content="搜索" Margin="2,0,2,0"/>
+                            <Button DockPanel.Dock="Right" Command="{StaticResource OpenDiary}" Content="打开日记" Margin="2,0,2,0"/>
+                        </DockPanel>
+                    </StackPanel>
+                </GroupBox>
+                <DockPanel DockPanel.Dock="Bottom">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Label Content="时间"/>
+                        <Label Content=":"/>
+                        <Label Content="标题"/>
+                    </StackPanel>
+                    <ListBox x:Name="lstDiaries" ItemsSource="{Binding Diaries}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding Datatime}" />
+                                    <TextBlock Text=":" />
+                                    <TextBlock Text="{Binding Title}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </DockPanel>
+            <GridSplitter Width="3"/>
+            <DockPanel Grid.Column="1">
+                <StackPanel DockPanel.Dock="Top">
+                    <DockPanel>
+                        <Label Content="查找表达式：" DockPanel.Dock="Left" />
+                        <TextBox Text="{Binding Pattern,UpdateSourceTrigger=PropertyChanged}" />                        
+                    </DockPanel>
+                    <DockPanel>
+                        <Label Content="替换表达式：" DockPanel.Dock="Left" />
+                        <TextBox Text="{Binding ReplacePattern,UpdateSourceTrigger=PropertyChanged}" />
+                    </DockPanel>
+                </StackPanel>
+                <DockPanel DockPanel.Dock="Bottom">
+                    <ItemsControl ItemsSource="{Binding SelectedItem,ElementName=lstDiaries}">
+                        <RichTextBox x:Name="rtbcontent">
+                            <FlowDocument>
+                                <Paragraph>
+                                    <Run Text="{Binding Content}"/>
+                                </Paragraph>
+                            </FlowDocument>
+                        </RichTextBox>
+                    </ItemsControl>
+                </DockPanel>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
 </Window>

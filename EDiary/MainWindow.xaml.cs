@@ -23,6 +23,10 @@ namespace EDiary
         public MainWindow()
         {
             InitializeComponent();
+            _Model = new MainModel();
+            this.DataContext = _Model;
         }
+        private MainModel _Model;
+
     }
 }

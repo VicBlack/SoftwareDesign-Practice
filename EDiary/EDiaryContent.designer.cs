@@ -55,20 +55,28 @@ namespace EDiary
 			OnCreated();
 		}
 		
-		public System.Data.Linq.Table<EDiary> EDiary
+		public System.Data.Linq.Table<User> User
 		{
 			get
 			{
-				return this.GetTable<EDiary>();
+				return this.GetTable<User>();
+			}
+		}
+		
+		public System.Data.Linq.Table<Diary> Diary
+		{
+			get
+			{
+				return this.GetTable<Diary>();
 			}
 		}
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="")]
-	public partial class EDiary
+	public partial class User
 	{
 		
-		private string _ID;
+		private int _ID;
 		
 		private string _PWD;
 		
@@ -76,12 +84,12 @@ namespace EDiary
 		
 		private string _Remarks;
 		
-		public EDiary()
+		public User()
 		{
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ID", CanBeNull=false)]
-		public string ID
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ID")]
+		public int ID
 		{
 			get
 			{
@@ -140,6 +148,123 @@ namespace EDiary
 				if ((this._Remarks != value))
 				{
 					this._Remarks = value;
+				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="")]
+	public partial class Diary
+	{
+		
+		private int _UserID;
+		
+		private System.DateTime _Datetime;
+		
+		private string _Title;
+		
+		private string _Content;
+		
+		private string _DiaryPWD;
+		
+		private bool _Visible;
+		
+		public Diary()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserID")]
+		public int UserID
+		{
+			get
+			{
+				return this._UserID;
+			}
+			set
+			{
+				if ((this._UserID != value))
+				{
+					this._UserID = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Datetime")]
+		public System.DateTime Datetime
+		{
+			get
+			{
+				return this._Datetime;
+			}
+			set
+			{
+				if ((this._Datetime != value))
+				{
+					this._Datetime = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Title")]
+		public string Title
+		{
+			get
+			{
+				return this._Title;
+			}
+			set
+			{
+				if ((this._Title != value))
+				{
+					this._Title = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Content", CanBeNull=false)]
+		public string Content
+		{
+			get
+			{
+				return this._Content;
+			}
+			set
+			{
+				if ((this._Content != value))
+				{
+					this._Content = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiaryPWD")]
+		public string DiaryPWD
+		{
+			get
+			{
+				return this._DiaryPWD;
+			}
+			set
+			{
+				if ((this._DiaryPWD != value))
+				{
+					this._DiaryPWD = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Visible")]
+		public bool Visible
+		{
+			get
+			{
+				return this._Visible;
+			}
+			set
+			{
+				if ((this._Visible != value))
+				{
+					this._Visible = value;
 				}
 			}
 		}

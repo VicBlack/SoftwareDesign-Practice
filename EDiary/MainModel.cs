@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Linq;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,15 +23,29 @@ namespace EDiary
             }
             else
             {
-                Status="数据库已经存在！";
-
+                Status="数据库已经存在！";                
             }
+            var Diaries = from r in DataContext.Diary select r;
         }
 
         #region 成员
         public string Status { get { return _Status; } set { if (_Status == value) return; _Status = value; OnPropertyChanged(nameof(Status)); } }
         private string _Status;
 
+        public void Signup(User newuser)
+        {
+
+        }
+
+        public ObservableCollection<Diary> Diaries
+        {
+            get;set;
+        }
+
+        public void Submit()
+        {
+            DataContext.SubmitChanges();
+        }
         public EDiaryContentDataContext DataContext { get; }
         #endregion
         #region INotifyPropertyChanged接口便利实现
