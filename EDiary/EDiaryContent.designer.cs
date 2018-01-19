@@ -92,10 +92,6 @@ namespace EDiary
 		
 		private string _Content;
 		
-		private string _DiaryPWD;
-		
-		private bool _Visible;
-		
 		private EntityRef<User> _User;
 		
     #region 可扩展性方法定义
@@ -110,10 +106,6 @@ namespace EDiary
     partial void OnTitleChanged();
     partial void OnContentChanging(string value);
     partial void OnContentChanged();
-    partial void OnDiaryPWDChanging(string value);
-    partial void OnDiaryPWDChanged();
-    partial void OnVisibleChanging(bool value);
-    partial void OnVisibleChanged();
     #endregion
 		
 		public Diary()
@@ -202,46 +194,6 @@ namespace EDiary
 					this._Content = value;
 					this.SendPropertyChanged("Content");
 					this.OnContentChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiaryPWD")]
-		public string DiaryPWD
-		{
-			get
-			{
-				return this._DiaryPWD;
-			}
-			set
-			{
-				if ((this._DiaryPWD != value))
-				{
-					this.OnDiaryPWDChanging(value);
-					this.SendPropertyChanging();
-					this._DiaryPWD = value;
-					this.SendPropertyChanged("DiaryPWD");
-					this.OnDiaryPWDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Visible")]
-		public bool Visible
-		{
-			get
-			{
-				return this._Visible;
-			}
-			set
-			{
-				if ((this._Visible != value))
-				{
-					this.OnVisibleChanging(value);
-					this.SendPropertyChanging();
-					this._Visible = value;
-					this.SendPropertyChanged("Visible");
-					this.OnVisibleChanged();
 				}
 			}
 		}
@@ -337,7 +289,7 @@ namespace EDiary
 			OnCreated();
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ID", IsPrimaryKey=true, IsDbGenerated=true)]
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ID", AutoSync=AutoSync.OnInsert, IsPrimaryKey=true, IsDbGenerated=true)]
 		public int ID
 		{
 			get

@@ -55,6 +55,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CreateDiary.xaml.cs">
+      <DependentUpon>CreateDiary.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ModifyPWD.xaml.cs">
       <DependentUpon>ModifyPWD.xaml</DependentUpon>
     </Compile>
@@ -64,6 +67,10 @@
     <Compile Include="Signup.xaml.cs">
       <DependentUpon>Signup.xaml</DependentUpon>
     </Compile>
+    <Page Include="CreateDiary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

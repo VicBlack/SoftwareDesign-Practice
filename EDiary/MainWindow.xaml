@@ -28,6 +28,10 @@
         <CommandBinding Command="{StaticResource Signout}" CanExecute="OnSignout_CanExecuted" Executed="OnSignout_Executed"/>
         <CommandBinding Command="{StaticResource ModifyPWD}" CanExecute="OnModifyPWD_CanExecuted" Executed="OnModifyPWD_Executed"/>
         <CommandBinding Command="{StaticResource GeneralInfo}" CanExecute="OnGeneralInfo_CanExecuted" Executed="OnGeneralInfo_Executed"/>
+        <CommandBinding Command="{StaticResource CreateDiary}" CanExecute="OnCreateDiary_CanExecuted" Executed="OnCreateDiary_Executed"/>
+        <CommandBinding Command="{StaticResource Search}" CanExecute="OnSearch_CanExecuted" Executed="OnSearch_Executed"/>
+        <CommandBinding Command="{StaticResource MatchRE}" CanExecute="OnMatchRE_CanExecuted" Executed="OnMatchRE_Executed"/>
+        <CommandBinding Command="{StaticResource ReplaceRE}" CanExecute="OnReplaceRE_CanExecuted" Executed="OnReplaceRE_Executed"/>
     </Window.CommandBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -38,13 +42,7 @@
                 <MenuItem Header="信息总览" Command="{StaticResource GeneralInfo}"/>
                 <MenuItem Header="注销" Command="{StaticResource Signout}"/>
             </MenuItem>
-            <MenuItem Header="日记本">
-                <MenuItem Header="新建日记" Command="{StaticResource CreateDiary}"/>
-                <MenuItem Header="保存日记" Command="{StaticResource SaveDiary}"/>
-                <MenuItem Header="关闭日记" Command="{StaticResource CloseDiary}"/>
-                <MenuItem Header="加密日记" Command="{StaticResource LockDiary}"/>
-                <MenuItem Header="隐藏日记" Command="{StaticResource HideDiary}"/>
-            </MenuItem>
+            <MenuItem Header="新建日记"  Command="{StaticResource CreateDiary}" />
             <MenuItem Header="编辑">
                 <MenuItem Header="查找" Command="{StaticResource MatchRE}"/>
                 <MenuItem Header="替换" Command="{StaticResource ReplaceRE}"/>
@@ -76,9 +74,7 @@
                             <TextBox Text="{Binding SearchTitle}" MinWidth="130"/>                            
                         </DockPanel>
                         <DockPanel Margin="5">
-                            <CheckBox DockPanel.Dock="Left" IsThreeState="True" IsChecked="{Binding DiaryVisible}" Content="已隐藏日记"/>
-                            <Button Command="{StaticResource Search}" Content="搜索" Margin="2,0,2,0"/>
-                            <Button DockPanel.Dock="Right" Command="{StaticResource OpenDiary}" Content="打开日记" Margin="2,0,2,0"/>
+                            <Button Command="{StaticResource Search}" Content="搜索" Margin="2,0,2,0"/>                            
                         </DockPanel>
                     </StackPanel>
                 </GroupBox>
@@ -88,7 +84,7 @@
                         <Label Content="|"/>
                         <Label Content="标题"/>
                     </StackPanel>
-                    <ListBox x:Name="lstDiaries" ItemsSource="{Binding Diaries}">
+                    <ListBox  x:Name="lstDiaries" ItemsSource="{Binding Diaries}"  >
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -113,16 +109,14 @@
                         <TextBox Text="{Binding ReplacePattern,UpdateSourceTrigger=PropertyChanged}" />
                     </DockPanel>
                 </StackPanel>
-                <DockPanel DockPanel.Dock="Bottom">
-                    <ItemsControl ItemsSource="{Binding SelectedItem,ElementName=lstDiaries}">
-                        <RichTextBox x:Name="rtbcontent">
-                            <FlowDocument>
-                                <Paragraph>
-                                    <Run Text="{Binding Content}"/>
-                                </Paragraph>
-                            </FlowDocument>
-                        </RichTextBox>
-                    </ItemsControl>
+                <DockPanel DockPanel.Dock="Bottom">                    
+                    <RichTextBox x:Name="rtbcontent">
+                        <FlowDocument>
+                            <Paragraph>
+                                <Run x:Name="content" Text="{Binding ElementName=lstDiaries, Path=SelectedItem.Content,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+                            </Paragraph>
+                        </FlowDocument>
+                    </RichTextBox>
                 </DockPanel>
             </DockPanel>
         </Grid>

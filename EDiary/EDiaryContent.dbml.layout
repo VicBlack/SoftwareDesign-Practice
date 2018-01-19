@@ -2,10 +2,10 @@
 <ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="EDiaryContent">
   <DataContextMoniker Name="/EDiaryContentDataContext" />
   <nestedChildShapes>
-    <classShape Id="79d57481-cd94-4e7f-a913-f25219f9b6c6" absoluteBounds="4.25, 1.25, 2, 1.9068933105468751">
+    <classShape Id="79d57481-cd94-4e7f-a913-f25219f9b6c6" absoluteBounds="4.25, 1.25, 2, 1.537305094401042">
       <DataClassMoniker Name="/EDiaryContentDataContext/Diary" />
       <nestedChildShapes>
-        <elementListCompartment Id="b146a4f5-636d-4359-92dd-377582134f13" absoluteBounds="4.265, 1.71, 1.9700000000000002, 1.346893310546875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+        <elementListCompartment Id="b146a4f5-636d-4359-92dd-377582134f13" absoluteBounds="4.265, 1.71, 1.9700000000000002, 0.97730509440104163" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
     <classShape Id="5331a714-6c44-4e8f-bc6d-3ee3290641b0" absoluteBounds="1.625, 1.375, 2, 1.537305094401042">
@@ -14,7 +14,7 @@
         <elementListCompartment Id="53518d11-1d3e-420c-9785-c27e92f419d3" absoluteBounds="1.6400000000000001, 1.835, 1.9700000000000002, 0.97730509440104163" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(3.625 : 2.14365254720052); (4.25 : 2.14365254720052)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(3.625 : 2.08115254720052); (4.25 : 2.08115254720052)]" fixedFrom="Algorithm" fixedTo="Algorithm">
       <AssociationMoniker Name="/EDiaryContentDataContext/User/User_Diary" />
       <nodes>
         <classShapeMoniker Id="5331a714-6c44-4e8f-bc6d-3ee3290641b0" />

@@ -5,14 +5,12 @@
       <Column Name="WritenDT" Storage="_Datetime" Type="System.DateTime" IsPrimaryKey="true" CanBeNull="false" />
       <Column Name="Title" Type="System.String" CanBeNull="true" />
       <Column Name="Content" Type="System.String" CanBeNull="false" />
-      <Column Name="DiaryPWD" Type="System.String" CanBeNull="true" />
-      <Column Name="Visible" Type="System.Boolean" CanBeNull="false" />
       <Association Name="User_Diary" Member="User" ThisKey="UserID" OtherKey="ID" Type="User" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="" Member="User">
     <Type Name="User">
-      <Column Name="ID" AutoSync="Never" Type="System.Int32" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ID" Type="System.Int32" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
       <Column Name="PWD" Type="System.String" CanBeNull="false" />
       <Column Name="Name" Type="System.String" CanBeNull="false" />
       <Column Name="Remarks" Type="System.String" CanBeNull="true" />

@@ -24,14 +24,13 @@ namespace EDiary
         {
             InitializeComponent();            
             _Model = new MainModel();
-            this.DataContext = _Model;
-            
+            this.DataContext = _Model;            
         }
         private MainModel _Model;
 
         private void OnSignup_CanExecuted(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = _Model.Currentuser==null;
+            e.CanExecute = _Model != null && _Model.Currentuser==null;
         }
 
         private void OnSignup_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -49,12 +48,13 @@ namespace EDiary
 
         private void OnMainWindowClosed(object sender, EventArgs e)
         {
+            _Model.Save();
             _Model.Submit();
         }
 
         private void OnSignin_CanExecuted(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = _Model.Currentuser == null;
+            e.CanExecute = _Model != null && _Model.Currentuser == null;
         }
 
         private void OnSignin_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -71,7 +71,7 @@ namespace EDiary
 
         private void OnSignout_CanExecuted(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = _Model.Currentuser != null;
+            e.CanExecute = _Model != null && _Model.Currentuser != null;
         }
 
         private void OnSignout_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -89,7 +89,7 @@ namespace EDiary
 
         private void OnModifyPWD_CanExecuted(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = _Model.Currentuser != null;
+            e.CanExecute = _Model != null && _Model.Currentuser != null;
         }
 
         private void OnModifyPWD_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -106,18 +106,98 @@ namespace EDiary
 
         private void OnGeneralInfo_CanExecuted(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = _Model.Currentuser != null;
+            e.CanExecute = _Model != null && _Model.Currentuser != null;
         }
 
         private void OnGeneralInfo_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             MessageBox.Show($"帐号：{_Model.Currentuser.ID}\n姓名：{_Model.Currentuser.Name}\n日记数量：{_Model.getDiaryCount()}\n个性签名：{_Model.Currentuser.Remarks}");
         }
+
+        private void OnCreateDiary_CanExecuted(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = _Model!=null && _Model.Currentuser != null;
+        }
+
+        private void OnCreateDiary_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            CreateDiary createDiary = new CreateDiary();
+            createDiary.CreateDiaryhdler += new CreateDiary.CreateDiaryEventHandler(CreateDiary);
+            createDiary.ShowDialog();
+        }
+
+        public void CreateDiary(object sender, CreateDiary.CreateDiaryEventArg e)
+        {
+            _Model.CreateDiary(e.Title,e.Content);
+        }
+
+        private void OnSearch_CanExecuted(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = _Model != null && _Model.Currentuser != null && (!string.IsNullOrWhiteSpace(_Model.SearchTitle) || _Model.SearchYear!=0 );
+        }
+
+        private void OnSearch_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            _Model.Search();
+        }
+
+        private void OnMatchRE_CanExecuted(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute=_Model!=null && _Model.CanStartMatch(content.Text);
+        }
+
+        private void OnMatchRE_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            List<string> list = _Model.GetMatches(content.Text);
+            foreach(string text in list)
+            {
+                List<TextRange> textRanges = FindWordFromPosition(rtbcontent.Document.ContentStart, text);
+                foreach (var range in textRanges)
+                {
+                    range.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Red));
+                    //range.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+                    //range.ApplyPropertyValue(TextElement.BackgroundProperty, new SolidColorBrush(Colors.PowderBlue));
+                }
+            }
+            
+        }
+
+        private void OnReplaceRE_CanExecuted(object sender, CanExecuteRoutedEventArgs e)
+        {            
+            e.CanExecute = _Model != null && _Model.CanStartReplace(content.Text);
+        }
+
+        private void OnReplaceRE_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            content.Text = _Model.Replace(content.Text);
+        }
+
+        List<TextRange> FindWordFromPosition(TextPointer position, string word)
+        {
+            List<TextRange> matchingText = new List<TextRange>();
+            while (position != null)
+            {
+                if (position.GetPointerContext(LogicalDirection.Forward) == TextPointerContext.Text)
+                {
+                    //带有内容的文本
+                    string textRun = position.GetTextInRun(LogicalDirection.Forward);
+                    //查找关键字在这文本中的位置
+                    int indexInRun = textRun.IndexOf(word);
+                    int indexHistory = 0;
+                    while (indexInRun >= 0)
+                    {
+                        TextPointer start = position.GetPositionAtOffset(indexInRun + indexHistory);
+                        TextPointer end = start.GetPositionAtOffset(word.Length);
+                        matchingText.Add(new TextRange(start, end));
+
+                        indexHistory = indexHistory + indexInRun + word.Length;
+                        textRun = textRun.Substring(indexInRun + word.Length);//去掉已经采集过的内容
+                        indexInRun = textRun.IndexOf(word);//重新判断新的字符串是否还有关键字
+                    }
+                }
+                position = position.GetNextContextPosition(LogicalDirection.Forward);
+            }
+            return matchingText;
+        }
     }
-    
-    
-
-
-
-
 }

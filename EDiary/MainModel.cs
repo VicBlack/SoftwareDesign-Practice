@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data.Linq;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace EDiary
@@ -27,6 +28,8 @@ namespace EDiary
             }
             Status = $"请登录或注册。";
             Diaries = new ObservableCollection<Diary>();
+            AllDiaries = new ObservableCollection<Diary>();
+
         }
 
         #region 成员
@@ -57,10 +60,17 @@ namespace EDiary
         public string ReplacePattern { get { return _ReplacePattern; } set { if (_ReplacePattern == value) return; _ReplacePattern = value; OnPropertyChanged(nameof(ReplacePattern)); } }
         private string _ReplacePattern;
 
-        public ObservableCollection<Diary> Diaries
-        {
-            get;set;
-        }
+        public ObservableCollection<Diary> Diaries { get { return _Diaries; } set { if (_Diaries == value) return; _Diaries = value; OnPropertyChanged(nameof(Diaries)); } }
+        private ObservableCollection<Diary> _Diaries;
+
+        public ObservableCollection<Diary> AllDiaries { get { return _AllDiaries; } set { if (_AllDiaries == value) return; _AllDiaries = value; OnPropertyChanged(nameof(AllDiaries)); } }
+        private ObservableCollection<Diary> _AllDiaries;
+        //public Table<Diary> Diaries
+        //{
+        //    get{
+        //        return DataContext.Diary;
+        //    }
+        //}
 
         public EDiaryContentDataContext DataContext { get; }
         #endregion
@@ -97,32 +107,52 @@ namespace EDiary
 
         public void InitializeDiary()
         {
+            AllDiaries.Clear();
+            Diaries.Clear();
             var QDiaries = from r in DataContext.Diary where r.UserID==Currentuser.ID select r;
             foreach(var QD in QDiaries)
             {
-                if(QD.Visible==true)
+                AllDiaries.Add(QD);
                 Diaries.Add(QD);
             }
         }
         
+        public void Save()
+        {
+            foreach(Diary d in Diaries)
+            {
+                foreach(Diary a in AllDiaries)
+                {
+                    if (d.WritenDT.Equals(a.WritenDT))
+                    {
+                        AllDiaries.Remove(a);
+                        AllDiaries.Add(d);
+                        break;
+                    }
+                }
+            }
+            var QDiaries = from r in DataContext.Diary where r.UserID == Currentuser.ID select r;
+            foreach (var QD in QDiaries)
+            {
+                DataContext.Diary.DeleteOnSubmit(QD);
+            }
+            foreach (Diary d in AllDiaries)
+            {
+                DataContext.Diary.InsertOnSubmit(d);
+            }
+            Submit();
+        }
+
         public void Signout(bool needsave)
         {
             Status = $"感谢使用！";
             if (needsave)
             {
-                var QDiaries = from r in DataContext.Diary where r.UserID == Currentuser.ID select r;
-                foreach (var QD in QDiaries)
-                {
-                    DataContext.Diary.DeleteOnSubmit(QD);
-                }
-                foreach (Diary d in Diaries)
-                {
-                    DataContext.Diary.InsertOnSubmit(d);
-                }
-                Submit();
+                Save();
             }
             Currentuser = null;
             Diaries.Clear();
+            AllDiaries.Clear();
         }
 
         public void ModifyPWD(string pwd,string npwd)
@@ -141,6 +171,71 @@ namespace EDiary
             var QDiaries = from r in DataContext.Diary where r.UserID == Currentuser.ID select r;
             return QDiaries.Count();
         }
+
+        public void CreateDiary(string ntitle,string ncontent)
+        {
+            if (string.IsNullOrWhiteSpace(ntitle))
+                ntitle = "Untitled";
+            Diary diary = new Diary {
+                UserID = Currentuser.ID, 
+                Title = ntitle,
+                Content = ncontent,
+                WritenDT = DateTime.Now 
+            };
+            Diaries.Add(diary);
+            AllDiaries.Add(diary);
+            Status = "创建日记成功！";            
+        }
+
+        public void Search()
+        {
+            Diaries.Clear();
+            var NQDiaries = from r in DataContext.Diary where r.UserID == Currentuser.ID select r;
+            foreach (var QD in NQDiaries)
+            {
+                if (!string.IsNullOrWhiteSpace(SearchTitle))
+                    if (!QD.Title.Contains(SearchTitle)) continue;
+                if (SearchYear != 0)
+                {
+                    if (QD.WritenDT.Year != SearchYear) continue;
+                    if (SearchMonth != 0)
+                    {   if (QD.WritenDT.Month != SearchMonth) continue;
+                        if (SearchDay != 0)
+                            if (QD.WritenDT.Day != SearchDay) continue;
+                    }
+                }
+                Diaries.Add(QD);
+            }            
+        }
+
+        public bool CanStartMatch(string TargetText)
+        {
+            return !string.IsNullOrWhiteSpace(Pattern) && !string.IsNullOrWhiteSpace(TargetText);
+        }
+
+        public bool CanStartReplace(string TargetText)
+        {
+            return !string.IsNullOrWhiteSpace(Pattern) && !string.IsNullOrWhiteSpace(ReplacePattern) && !string.IsNullOrWhiteSpace(TargetText);
+        }
+
+        public List<string> GetMatches(string TargetText)
+        {
+            Regex aRegex = new Regex(Pattern);
+            MatchCollection aMatches = aRegex.Matches(TargetText);
+            List<string> list = new List<string>();
+            foreach (Match aMatch in aMatches)
+            {
+                list.Add(aMatch.Value);
+            }
+            return list;
+        }
+
+        public string Replace(string TargetText)
+        {
+            Regex aRegex = new Regex(Pattern);
+            return aRegex.Replace(TargetText, ReplacePattern);
+        }
+
         #endregion
         #region INotifyPropertyChanged接口便利实现
         private void OnPropertyChanged(string aPropertyName)
