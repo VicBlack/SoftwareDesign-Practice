@@ -205,7 +205,8 @@ namespace EDiary
                     }
                 }
                 Diaries.Add(QD);
-            }            
+            }
+            Status = $"查询中！";
         }
 
         public bool CanStartMatch(string TargetText)
@@ -227,13 +228,15 @@ namespace EDiary
             {
                 list.Add(aMatch.Value);
             }
-            return list;
+            Status = $"匹配中！";
+            return list;            
         }
 
         public string Replace(string TargetText)
         {
             Regex aRegex = new Regex(Pattern);
-            return aRegex.Replace(TargetText, ReplacePattern);
+            Status = $"替换中！";
+            return aRegex.Replace(TargetText, ReplacePattern);            
         }
 
         #endregion
